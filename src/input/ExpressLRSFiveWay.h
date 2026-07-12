@@ -13,11 +13,6 @@
 
 #ifdef INPUTBROKER_EXPRESSLRSFIVEWAY_TYPE
 
-// REVISIT esp_adc_cal.h
-// "legacy adc calibration driver is deprecated, please migrate to use esp_adc/adc_cali.h and esp_adc/adc_cali_scheme.h"
-#include <esp_adc_cal.h>
-#include <soc/adc_channel.h>
-
 #include "InputBroker.h"
 #include "MeshService.h" // For adhoc ping action
 #include "buzz.h"

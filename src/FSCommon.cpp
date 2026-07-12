@@ -44,13 +44,13 @@ bool copyFile(const char *from, const char *to)
     concurrency::LockGuard g(spiLock);
     unsigned char cbuffer[16];
 
-    File f1 = FSCom.open(from, FILE_O_READ);
+    auto f1 = FSCom.open(from, FILE_O_READ);
     if (!f1) {
         LOG_ERROR("Failed to open source file %s", from);
         return false;
     }
 
-    File f2 = FSCom.open(to, FILE_O_WRITE);
+    auto f2 = FSCom.open(to, FILE_O_WRITE);
     if (!f2) {
         LOG_ERROR("Failed to open destination file %s", to);
         return false;
@@ -157,7 +157,7 @@ void collectFiles(const char *dirname, uint8_t levels, size_t maxCount, std::vec
     if (!dirname)
         return;
 
-    File root = FSCom.open(dirname, FILE_O_READ);
+    auto root = FSCom.open(dirname, FILE_O_READ);
     if (!root)
         return;
     if (!root.isDirectory()) {
@@ -165,7 +165,7 @@ void collectFiles(const char *dirname, uint8_t levels, size_t maxCount, std::vec
         return;
     }
 
-    File file = root.openNextFile();
+    auto file = root.openNextFile();
     // file.name()[0] check is a workaround for a bug in the Adafruit LittleFS nrf52 glue (see issue 4395)
     while (file && file.name()[0]) {
         if (filenames.size() >= maxCount) {
@@ -267,11 +267,11 @@ void listDir(const char *dirname, uint8_t levels, bool del)
 {
 #ifdef FSCom
     char buffer[255];
-    File root = FSCom.open(dirname, FILE_O_READ);
+    auto root = FSCom.open(dirname, FILE_O_READ);
     if (!root || !root.isDirectory())
         return;
 
-    File file = root.openNextFile();
+    auto file = root.openNextFile();
     while (file && file.name()[0]) { // file.name()[0] check: workaround for Adafruit LittleFS nRF52 bug #4395
 #ifdef ARCH_ESP32
         const char *filepath = file.path();
@@ -366,6 +366,14 @@ void setupSDCard()
 {
 #if defined(HAS_SDCARD) && !defined(SDCARD_USE_SOFT_SPI) && !defined(HAS_SD_MMC)
     concurrency::LockGuard g(spiLock);
+#if defined(ARCH_NRF52)
+    SPI.begin();
+    if (!SD.begin(SDCARD_CS)) {
+        LOG_DEBUG("No SD card detected");
+        return;
+    }
+    LOG_DEBUG("SD card mounted");
+#else
     SDHandler.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
     if (!SD.begin(SDCARD_CS, SDHandler, SD_SPI_FREQUENCY)) {
         LOG_DEBUG("No SD_MMC card detected");
@@ -391,5 +399,6 @@ void setupSDCard()
     LOG_DEBUG("SD Card Size: %lu MB", (uint32_t)cardSize);
     LOG_DEBUG("Total space: %lu MB", (uint32_t)(SD.totalBytes() / (1024 * 1024)));
     LOG_DEBUG("Used space: %lu MB", (uint32_t)(SD.usedBytes() / (1024 * 1024)));
+#endif
 #endif
 }
