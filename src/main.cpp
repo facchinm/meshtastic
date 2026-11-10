@@ -71,7 +71,7 @@ NimbleBluetooth *nimbleBluetooth = nullptr;
 #endif
 #endif
 
-#ifdef ARCH_NRF52
+#if defined(ARCH_NRF52) || defined(ARCH_ZEPHYR)
 #include "NRF52Bluetooth.h"
 NRF52Bluetooth *nrf52Bluetooth = nullptr;
 #endif

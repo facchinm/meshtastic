@@ -21,6 +21,9 @@ extern Adafruit_nRFCrypto nRFCrypto;
 #include <Arduino.h>
 #elif defined(ARCH_STM32WL)
 #include <stm32wlxx_hal.h>
+#elif defined(ARCH_ZEPHYR)
+#include <zephyr/device.h>
+#include <zephyr/drivers/entropy.h>
 #elif defined(ARCH_PORTDUINO)
 #include <random>
 #include <unistd.h>
@@ -172,6 +175,9 @@ bool fill(uint8_t *buffer, size_t length, bool useRadioEntropy)
     filled = true;
 #elif defined(ARCH_STM32WL) && defined(HAL_RNG_MODULE_ENABLED)
     filled = fillFromStm32Rng(buffer, length);
+#elif defined(ARCH_ZEPHYR)
+    // The SoC entropy source (hardware TRNG on Nordic parts)
+    filled = entropy_get_entropy(DEVICE_DT_GET(DT_CHOSEN(zephyr_entropy)), buffer, length) == 0;
 #elif defined(ARCH_PORTDUINO)
     // Prefer the host OS RNG first when running under Portduino.
 #ifdef __linux__

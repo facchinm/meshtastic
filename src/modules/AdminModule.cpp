@@ -1779,7 +1779,7 @@ void AdminModule::handleGetDeviceConnectionStatus(const meshtastic_MeshPacket &r
         conn.bluetooth.is_connected = nimbleBluetooth->isConnected();
         conn.bluetooth.rssi = nimbleBluetooth->getRssi();
     }
-#elif defined(ARCH_NRF52)
+#elif defined(ARCH_NRF52) || defined(ARCH_ZEPHYR)
     if (config.bluetooth.enabled && nrf52Bluetooth) {
         conn.bluetooth.is_connected = nrf52Bluetooth->isConnected();
     }
@@ -2488,7 +2488,7 @@ void disableBluetooth()
     if (nimbleBluetooth)
         nimbleBluetooth->deinit();
     esp32ReleaseBluetoothMemoryIfUnused();
-#elif defined(ARCH_NRF52)
+#elif defined(ARCH_NRF52) || defined(ARCH_ZEPHYR)
     if (nrf52Bluetooth)
         nrf52Bluetooth->shutdown();
 #elif defined(MESHTASTIC_LINUX_BLE)

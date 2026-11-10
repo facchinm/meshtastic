@@ -16,7 +16,7 @@
 #include "nimble/NimbleBluetooth.h"
 extern NimbleBluetooth *nimbleBluetooth;
 #endif
-#ifdef ARCH_NRF52
+#if defined(ARCH_NRF52) || defined(ARCH_ZEPHYR)
 #include "NRF52Bluetooth.h"
 extern NRF52Bluetooth *nrf52Bluetooth;
 #endif

@@ -40,7 +40,7 @@ using namespace STM32_LittleFS_Namespace;
 #define FILE_O_READ "r"
 #endif
 
-#if defined(ARCH_NRF52)
+#if defined(ARCH_NRF52) || defined(ARCH_ZEPHYR)
 // NRF52 version
 #include "InternalFileSystem.h"
 #define FSCom InternalFS
